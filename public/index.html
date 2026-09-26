@@ -41,6 +41,7 @@
       <button class="tab-btn" data-tab="equipo">👥 Equipo & Directorio</button>
       <button class="tab-btn" data-tab="puestos" id="tabPuestosBtn">🛡️ Puestos</button>
       <button class="tab-btn" data-tab="auditoria" id="tabAuditoriaBtn">📋 Auditoría SSD</button>
+      <button class="tab-btn" data-tab="menu">⚙️ Menú</button>
     </div>
   </nav>
 
@@ -277,6 +278,81 @@
             <!-- Renderizado dinámico -->
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- 7. Sección: Menú y Ajustes (Diseño idéntico a la versión móvil) -->
+    <section id="panel-menu" class="section-panel">
+      <div style="max-width: 440px; margin: 0 auto; padding: 0.5rem 0.25rem 2rem;">
+        
+        <h2 style="text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.25rem; color: #0f172a;">Menú</h2>
+
+        <!-- Tarjeta de Perfil -->
+        <div class="menu-user-card" onclick="App.abrirModal('modalCambiarClave')">
+          <div class="menu-user-avatar" id="menuUserAvatar">S</div>
+          <div class="menu-user-info">
+            <div class="menu-user-name" id="menuUserName">Samuel</div>
+            <div class="menu-user-email" id="menuUserEmail">samipirela26@gmail.com</div>
+          </div>
+          <span class="menu-user-edit" title="Editar">✏️</span>
+        </div>
+
+        <!-- CONFIGURACIÓN -->
+        <div class="menu-section-title">CONFIGURACIÓN</div>
+        <div class="menu-row" onclick="App.ajustarUmbralAusencias()">
+          <span class="menu-row-icon">⚙️</span>
+          <span class="menu-row-label">Umbral de alertas de ausencia</span>
+          <span class="menu-row-val" id="menuUmbralVal">3 ausencias</span>
+        </div>
+
+        <!-- ACERCA DE -->
+        <div class="menu-section-title">ACERCA DE</div>
+        <div class="menu-row" style="cursor: default;">
+          <span class="menu-row-icon">📋</span>
+          <span class="menu-row-label">AsistApp</span>
+          <span class="menu-row-val">v105</span>
+        </div>
+        <div class="menu-row" style="cursor: default;">
+          <span class="menu-row-icon">🗄️</span>
+          <span class="menu-row-label">Base de datos</span>
+          <span class="menu-row-val">SQLite (servidor propio)</span>
+        </div>
+        <div class="menu-row" style="cursor: default;">
+          <span class="menu-row-icon">📶</span>
+          <span class="menu-row-label">Modo offline</span>
+          <span class="menu-row-val" style="color: #16a34a;">Activado ✓</span>
+        </div>
+
+        <!-- MANTENIMIENTO -->
+        <div class="menu-section-title">MANTENIMIENTO</div>
+        <div class="menu-row" onclick="App.actualizarApp()">
+          <span class="menu-row-icon">🔄</span>
+          <span class="menu-row-label">Actualizar app</span>
+          <span class="menu-row-val">v105</span>
+        </div>
+
+        <!-- RESPALDO -->
+        <div class="menu-section-title">RESPALDO</div>
+        <div class="menu-row" onclick="App.descargarRespaldo()">
+          <span class="menu-row-icon">💾</span>
+          <span class="menu-row-label">Descargar respaldo</span>
+          <span class="menu-row-val">.json</span>
+        </div>
+        <div class="menu-row" onclick="document.getElementById('inputRestaurarRespaldo').click()">
+          <span class="menu-row-icon">📥</span>
+          <span class="menu-row-label">Restaurar respaldo</span>
+          <span class="menu-row-val">.json</span>
+        </div>
+        <input type="file" id="inputRestaurarRespaldo" accept=".json,application/json" style="display: none;" onchange="App.restaurarRespaldo(this)">
+
+        <!-- CUENTA -->
+        <div class="menu-section-title">CUENTA</div>
+        <div class="menu-row" onclick="App.cerrarSesion()" style="color: #dc2626;">
+          <span class="menu-row-icon">🚪</span>
+          <span class="menu-row-label" style="color: #dc2626; font-weight: 600;">Cerrar sesión</span>
+          <span class="menu-row-val"></span>
+        </div>
+
       </div>
     </section>
 

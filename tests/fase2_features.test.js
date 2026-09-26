@@ -175,4 +175,23 @@ test('=== FASE 2: TABLÓN DE AVISOS, DISPONIBILIDAD Y VALIDACIÓN PREVENTIVA ===
 
     assert.equal(resAsignarOk.status, 201);
   });
+
+  await t.test('6. Respaldo: Exportación e importación de base de datos en JSON (v105)', async () => {
+    // Exportar respaldo como Líder o Root
+    const resExport = await request(app, 'GET', '/api/respaldo/exportar', null, tokenRoot);
+    assert.equal(resExport.status, 200);
+    assert.equal(resExport.body.version, 'v105');
+    assert.ok(resExport.body.data.cultos.length >= 1);
+    assert.ok(resExport.body.data.turnos.length >= 1);
+
+    // Diácono no puede importar ni exportar (403)
+    const resFailDiac = await request(app, 'GET', '/api/respaldo/exportar', null, tokenDiacono);
+    assert.equal(resFailDiac.status, 403);
+
+    // Root restaura el respaldo
+    const resImport = await request(app, 'POST', '/api/respaldo/importar', resExport.body, tokenRoot);
+    assert.equal(resImport.status, 200);
+    assert.equal(resImport.body.ok, true);
+  });
 });
+

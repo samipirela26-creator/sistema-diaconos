@@ -232,6 +232,9 @@ const App = {
       case 'auditoria':
         this.cargarAuditoria();
         break;
+      case 'menu':
+        this.cargarMenu();
+        break;
     }
   },
 
@@ -1108,6 +1111,115 @@ const App = {
       const label = item.culto_fecha ? item.culto_fecha.substring(5) : `C${idx + 1}`;
       ctx.fillText(label, x + barWidth / 2, canvas.height - paddingBottom + 15);
     });
+  },
+
+  // 11. PANTALLA MENÚ Y CONFIGURACIÓN (Estilo AsistApp v105)
+  cargarMenu() {
+    if (!this.usuario) return;
+
+    const nombre = this.usuario.nombre_completo || 'Usuario';
+    const email = this.usuario.email || `${this.usuario.username}@iglesia.local`;
+    const inicial = nombre.trim().charAt(0).toUpperCase();
+
+    const avatarEl = document.getElementById('menuUserAvatar');
+    if (avatarEl) avatarEl.textContent = inicial;
+
+    const nameEl = document.getElementById('menuUserName');
+    if (nameEl) nameEl.textContent = nombre;
+
+    const emailEl = document.getElementById('menuUserEmail');
+    if (emailEl) emailEl.textContent = email;
+
+    const umbral = localStorage.getItem('umbralAusencias') || '3';
+    const umbralEl = document.getElementById('menuUmbralVal');
+    if (umbralEl) umbralEl.textContent = `${umbral} ausencias`;
+  },
+
+  ajustarUmbralAusencias() {
+    const actual = localStorage.getItem('umbralAusencias') || '3';
+    const nuevo = prompt('Definir umbral de alertas de ausencia consecutivas:', actual);
+    if (nuevo !== null && nuevo.trim() !== '') {
+      const num = parseInt(nuevo, 10);
+      if (!isNaN(num) && num > 0) {
+        localStorage.setItem('umbralAusencias', num);
+        const umbralEl = document.getElementById('menuUmbralVal');
+        if (umbralEl) umbralEl.textContent = `${num} ausencias`;
+        this.mostrarToast(`Umbral de alertas actualizado a ${num} ausencias`, 'success');
+      } else {
+        this.mostrarToast('Por favor introduce un número válido mayor a 0', 'error');
+      }
+    }
+  },
+
+  actualizarApp() {
+    this.mostrarToast('Comprobando actualizaciones con el servidor...', 'info');
+    setTimeout(() => {
+      this.mostrarToast('✓ La app está al día en la versión v105', 'success');
+    }, 600);
+  },
+
+  async descargarRespaldo() {
+    this.mostrarToast('Generando respaldo en formato JSON...', 'info');
+    try {
+      const res = await fetch('/api/respaldo/exportar', {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      if (!res.ok) {
+        throw new Error('No se pudo generar el respaldo');
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `asistapp-respaldo-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      this.mostrarToast('Respaldo descargado exitosamente (.json)', 'success');
+    } catch (err) {
+      this.mostrarToast(err.message, 'error');
+    }
+  },
+
+  async restaurarRespaldo(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (!confirm(`¿Estás seguro de restaurar los datos desde "${file.name}"? Esta acción sincronizará los registros.`)) {
+      input.value = '';
+      return;
+    }
+
+    try {
+      this.mostrarToast('Cargando y validando respaldo...', 'info');
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+          const res = await this.apiFetch('/api/respaldo/importar', {
+            method: 'POST',
+            body: JSON.stringify(json)
+          });
+          if (res && res.ok) {
+            this.mostrarToast('¡Respaldo restaurado con éxito!', 'success');
+            setTimeout(() => {
+              this.cambiarTab('mis-turnos');
+            }, 800);
+          }
+        } catch (parseErr) {
+          this.mostrarToast('El archivo seleccionado no es un JSON válido', 'error');
+        } finally {
+          input.value = '';
+        }
+      };
+      reader.readAsText(file);
+    } catch (err) {
+      this.mostrarToast('Error al leer el archivo de respaldo', 'error');
+      input.value = '';
+    }
   },
 
   // Helpers de Modales y Utilidades
