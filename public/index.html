@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Diáconos</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Encabezado Superior -->
+  <header class="header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">✝</div>
+        <div class="brand-text">
+          <h1>Diáconos Iglesia</h1>
+          <span>Gestión & Cuadrantes (Metodología SSD)</span>
+        </div>
+      </div>
+
+      <div class="user-nav" id="userNav" style="display: none;">
+        <div class="user-badge">
+          <span class="user-name" id="navUserName">Usuario</span>
+          <span class="role-pill" id="navUserRole">Rol</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnCambiarClave" title="Cambiar Contraseña">🔑 Clave</button>
+        <button class="btn btn-danger btn-sm" id="btnCerrarSesion">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Pestañas de Navegación -->
+  <nav class="nav-tabs-wrapper" id="navTabsWrapper" style="display: none;">
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-tab="mis-turnos">📌 Mis Turnos</button>
+      <button class="tab-btn" data-tab="cultos">📅 Cultos & Cuadrante</button>
+      <button class="tab-btn" data-tab="avisos">📢 Tablón de Avisos</button>
+      <button class="tab-btn" data-tab="disponibilidad">🗓️ Disponibilidad</button>
+      <button class="tab-btn" data-tab="reportes">📝 Reportes de Culto</button>
+      <button class="tab-btn" data-tab="equipo">👥 Equipo & Directorio</button>
+      <button class="tab-btn" data-tab="puestos" id="tabPuestosBtn">🛡️ Puestos</button>
+      <button class="tab-btn" data-tab="auditoria" id="tabAuditoriaBtn">📋 Auditoría SSD</button>
+    </div>
+  </nav>
+
+  <!-- Contenedor Principal -->
+  <main class="main-content">
+
+    <!-- Vista de Inicio de Sesión -->
+    <div id="viewLogin" class="login-wrapper">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="logo-badge">✝</div>
+          <h2>Iniciar Sesión</h2>
+          <p>Acceso al sistema de diáconos y servidores</p>
+        </div>
+        <form id="formLogin">
+          <div class="form-group">
+            <label for="loginUsername">Usuario o Correo Electrónico</label>
+            <input type="text" id="loginUsername" class="form-control" placeholder="Ej: root, lider o tu usuario" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Contraseña</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Ingresar al Sistema</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 0.75rem; background: #f8fafc; border-radius: var(--radius-sm); font-size: 0.775rem; color: var(--text-muted); border: 1px dashed var(--border);">
+          <strong>Cuentas de Acceso de Demostración:</strong><br>
+          • <strong>Root:</strong> <code>root</code> / <code>RootDiacono2026*</code><br>
+          • <strong>Líder de Diáconos:</strong> <code>lider</code> / <code>Lider1234*</code><br>
+          • <strong>Diáconos:</strong> <code>carlos</code> o <code>juan</code> / <code>Diacono123*</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. Sección: Mis Turnos Asignados -->
+    <section id="panel-mis-turnos" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Mis Turnos Asignados</h2>
+          <p>Consulta tus asignaciones en los cultos, confirma tu asistencia o solicita suplencia anticipada</p>
+        </div>
+      </div>
+      <div id="misTurnosContainer" class="grid-cards">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- 2. Sección: Cultos & Cuadrante -->
+    <section id="panel-cultos" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Programación de Cultos & Cuadrantes</h2>
+          <p>Planificación de servicios y asignación de puestos de los diáconos</p>
+        </div>
+        <button class="btn btn-primary" id="btnNuevoCulto" style="display: none;">+ Programar Culto</button>
+      </div>
+
+      <div id="cultosContainer" class="grid-cards">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- Sección: Tablón de Avisos -->
+    <section id="panel-avisos" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Tablón de Avisos & Comunicados</h2>
+          <p>Instrucciones, reuniones de servidores y anuncios del liderazgo de diáconos</p>
+        </div>
+        <button class="btn btn-primary" id="btnNuevoAviso" style="display: none;">+ Publicar Aviso</button>
+      </div>
+      <div id="avisosContainer" class="grid-cards">
+        <!-- Renderizado dinámico -->
+      </div>
+    </section>
+
+    <!-- Sección: Mi Disponibilidad -->
+    <section id="panel-disponibilidad" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Disponibilidad de Servicio</h2>
+          <p>Notifica con anticipación fechas en las que no podrás servir para que el liderazgo no te asigne</p>
+        </div>
+        <button class="btn btn-primary" id="btnNuevaDisponibilidad">+ Notificar Ausencia</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha de Ausencia</th>
+              <th id="thDisponibilidadDiacono" style="display: none;">Diácono</th>
+              <th>Motivo o Justificación</th>
+              <th>Registrado el</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDisponibilidadBody">
+            <!-- Renderizado dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Sección: Reportes de Culto -->
+    <section id="panel-reportes" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Reportes de Asistencia & Conteo</h2>
+          <p>Registro dominical de asistencia de hermanos, niños, visitas primera vez e incidencias</p>
+        </div>
+      </div>
+
+      <div class="metrics-row" id="metricsContainer">
+        <div class="metric-card">
+          <div class="label">Asistencia Total Acumulada</div>
+          <div class="value" id="metricAsistencia">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Promedio por Culto</div>
+          <div class="value" id="metricPromedio">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Visitas de Primera Vez</div>
+          <div class="value" id="metricVisitas">0</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+        <div class="card-title" style="margin-bottom: 0.75rem;">📊 Gráfico Comparativo de Asistencias</div>
+        <canvas id="canvasGraficoAsistencia" height="140" style="width: 100%; max-height: 200px; display: block;"></canvas>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Culto / Fecha</th>
+              <th>Total Asistentes</th>
+              <th>Hermanos / Niños / Visitas</th>
+              <th>Ofrendas</th>
+              <th>Novedades / Incidencias</th>
+              <th>Registrado Por</th>
+            </tr>
+          </thead>
+          <tbody id="tablaReportesBody">
+            <!-- Renderizado dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. Sección: Equipo & Directorio -->
+    <section id="panel-equipo" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Equipo de Diáconos & Directorio</h2>
+          <p>Directorio de contacto del cuerpo de servidores y administración de cuentas</p>
+        </div>
+        <button class="btn btn-primary" id="btnNuevoUsuario" style="display: none;">+ Registrar Diácono</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre Completo</th>
+              <th>Usuario</th>
+              <th>Teléfono</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th id="thAccionesUsuario" style="display: none;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaUsuariosBody">
+            <!-- Renderizado dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Sección: Puestos de Servicio -->
+    <section id="panel-puestos" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Puestos de Servicio</h2>
+          <p>Puestos de servicio requeridos para la atención del templo (puertas, ofrendas, orden, etc.)</p>
+        </div>
+        <button class="btn btn-primary" id="btnNuevoPuesto">+ Nuevo Puesto</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Nombre del Puesto</th>
+              <th>Descripción</th>
+              <th>Cupo Sugerido</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPuestosBody">
+            <!-- Renderizado dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. Sección: Auditoría SSD -->
+    <section id="panel-auditoria" class="section-panel">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Bitácora de Auditoría (SSD)</h2>
+          <p>Trazabilidad inmutable de todas las acciones y eventos críticos de seguridad</p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Módulo</th>
+              <th>Acción</th>
+              <th>Detalle</th>
+              <th>IP</th>
+            </tr>
+          </thead>
+          <tbody id="tablaAuditoriaBody">
+            <!-- Renderizado dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALES DEL SISTEMA -->
+
+  <!-- Modal: Crear/Editar Culto -->
+  <div id="modalCulto" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalCultoTitulo">Programar Nuevo Culto</h3>
+        <button class="modal-close" data-close="modalCulto">&times;</button>
+      </div>
+      <form id="formCulto">
+        <div class="modal-body">
+          <input type="hidden" id="cultoId">
+          <div class="form-group">
+            <label for="cultoTitulo">Título del Culto o Actividad</label>
+            <input type="text" id="cultoTitulo" class="form-control" placeholder="Ej: Culto Dominical Mañana" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cultoFecha">Fecha</label>
+              <input type="date" id="cultoFecha" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="cultoHoraInicio">Hora Inicio</label>
+              <input type="time" id="cultoHoraInicio" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="cultoHoraFin">Hora Fin (opcional)</label>
+              <input type="time" id="cultoHoraFin" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cultoTipo">Tipo de Servicio</label>
+            <select id="cultoTipo" class="form-control">
+              <option value="culto">Culto General</option>
+              <option value="vigilia">Vigilia</option>
+              <option value="evento_especial">Evento Especial</option>
+              <option value="reunion_diaconos">Reunión de Diáconos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cultoDescripcion">Descripción / Notas</label>
+            <textarea id="cultoDescripcion" class="form-control" rows="2" placeholder="Detalles de la reunión..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalCulto">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Culto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Asignar Diácono a Puesto -->
+  <div id="modalAsignarTurno" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Asignar Diácono a Cuadrante</h3>
+        <button class="modal-close" data-close="modalAsignarTurno">&times;</button>
+      </div>
+      <form id="formAsignarTurno">
+        <div class="modal-body">
+          <input type="hidden" id="asignarCultoId">
+          <div class="form-group">
+            <label>Culto Seleccionado:</label>
+            <div id="asignarCultoInfo" style="font-weight: 600; color: var(--primary);"></div>
+          </div>
+          <div class="form-group">
+            <label for="asignarPuestoId">Puesto de Servicio</label>
+            <select id="asignarPuestoId" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label for="asignarUsuarioId">Diácono a Asignar</label>
+            <select id="asignarUsuarioId" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label for="asignarNotas">Instrucciones o Notas Especiales</label>
+            <input type="text" id="asignarNotas" class="form-control" placeholder="Ej: Llegar 20 min antes">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalAsignarTurno">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Asignación</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Responder a Turno (Confirmar o Excusarse) -->
+  <div id="modalResponderTurno" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Confirmación de Asistencia al Turno</h3>
+        <button class="modal-close" data-close="modalResponderTurno">&times;</button>
+      </div>
+      <form id="formResponderTurno">
+        <div class="modal-body">
+          <input type="hidden" id="responderTurnoId">
+          <div id="responderTurnoInfo" style="margin-bottom: 1rem; font-size: 0.9rem;"></div>
+          <div class="form-group">
+            <label for="responderEstado">Tu Respuesta:</label>
+            <select id="responderEstado" class="form-control">
+              <option value="confirmado">✅ Confirmo mi asistencia</option>
+              <option value="excusado">❌ No podré asistir (Solicitar suplencia)</option>
+            </select>
+          </div>
+          <div class="form-group" id="grupoMotivoExcusa" style="display: none;">
+            <label for="responderMotivo">Motivo o Causa (obligatorio si te excusas):</label>
+            <textarea id="responderMotivo" class="form-control" rows="3" placeholder="Describe brevemente el motivo..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalResponderTurno">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Respuesta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Registrar Reporte de Culto -->
+  <div id="modalReporte" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Reporte de Asistencia del Culto</h3>
+        <button class="modal-close" data-close="modalReporte">&times;</button>
+      </div>
+      <form id="formReporte">
+        <div class="modal-body">
+          <input type="hidden" id="reporteCultoId">
+          <div id="reporteCultoInfo" style="font-weight: 600; color: var(--primary); margin-bottom: 1rem;"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reporteHermanos">Adultos / Miembros</label>
+              <input type="number" id="reporteHermanos" class="form-control" min="0" value="0" required>
+            </div>
+            <div class="form-group">
+              <label for="reporteNinos">Niños</label>
+              <input type="number" id="reporteNinos" class="form-control" min="0" value="0" required>
+            </div>
+            <div class="form-group">
+              <label for="reporteVisitas">Visitas 1ra Vez</label>
+              <input type="number" id="reporteVisitas" class="form-control" min="0" value="0" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reporteOfrenda">Monto de Ofrendas (opcional)</label>
+            <input type="number" id="reporteOfrenda" class="form-control" min="0" step="0.01" value="0.00">
+          </div>
+          <div class="form-group">
+            <label for="reporteNovedades">Novedades, Incidencias o Peticiones</label>
+            <textarea id="reporteNovedades" class="form-control" rows="3" placeholder="Cualquier eventualidad ocurrida en el servicio..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalReporte">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Reporte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Crear/Editar Usuario -->
+  <div id="modalUsuario" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalUsuarioTitulo">Registrar Diácono / Servidor</h3>
+        <button class="modal-close" data-close="modalUsuario">&times;</button>
+      </div>
+      <form id="formUsuario">
+        <div class="modal-body">
+          <input type="hidden" id="usuarioId">
+          <div class="form-group">
+            <label for="usuarioNombre">Nombre Completo</label>
+            <input type="text" id="usuarioNombre" class="form-control" placeholder="Ej: Pedro Pérez" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="usuarioUsername">Nombre de Usuario</label>
+              <input type="text" id="usuarioUsername" class="form-control" placeholder="pedro" required>
+            </div>
+            <div class="form-group">
+              <label for="usuarioTelefono">Teléfono (WhatsApp)</label>
+              <input type="text" id="usuarioTelefono" class="form-control" placeholder="0414-1234567">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="usuarioEmail">Correo Electrónico</label>
+              <input type="email" id="usuarioEmail" class="form-control" placeholder="pedro@correo.com">
+            </div>
+            <div class="form-group">
+              <label for="usuarioRol">Rol en el Sistema</label>
+              <select id="usuarioRol" class="form-control">
+                <option value="diacono">Diácono</option>
+                <option value="lider" id="optRolLider">Líder de Diáconos</option>
+                <option value="root" id="optRolRoot">Root (Administrador)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="grupoPassword">
+            <label for="usuarioPassword">Contraseña Inicial</label>
+            <input type="password" id="usuarioPassword" class="form-control" placeholder="Mínimo 6 caracteres">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalUsuario">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Diácono</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Crear/Editar Puesto -->
+  <div id="modalPuesto" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalPuestoTitulo">Nuevo Puesto de Servicio</h3>
+        <button class="modal-close" data-close="modalPuesto">&times;</button>
+      </div>
+      <form id="formPuesto">
+        <div class="modal-body">
+          <input type="hidden" id="puestoId">
+          <div class="form-group">
+            <label for="puestoNombre">Nombre del Puesto</label>
+            <input type="text" id="puestoNombre" class="form-control" placeholder="Ej: Puerta Principal" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="puestoCupo">Cupo Sugerido de Diáconos</label>
+              <input type="number" id="puestoCupo" class="form-control" min="1" value="2" required>
+            </div>
+            <div class="form-group">
+              <label for="puestoOrden">Orden en Cuadrante</label>
+              <input type="number" id="puestoOrden" class="form-control" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="puestoDescripcion">Descripción de Funciones</label>
+            <textarea id="puestoDescripcion" class="form-control" rows="2" placeholder="Responsabilidades de este puesto..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalPuesto">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Puesto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Cambiar Contraseña -->
+  <div id="modalCambiarClave" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Cambiar Mi Contraseña</h3>
+        <button class="modal-close" data-close="modalCambiarClave">&times;</button>
+      </div>
+      <form id="formCambiarClave">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="claveActual">Contraseña Actual</label>
+            <input type="password" id="claveActual" class="form-control" required autocomplete="current-password">
+          </div>
+          <div class="form-group">
+            <label for="claveNueva">Nueva Contraseña</label>
+            <input type="password" id="claveNueva" class="form-control" minlength="6" placeholder="Mínimo 6 caracteres" required autocomplete="new-password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalCambiarClave">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Crear Aviso -->
+  <div id="modalAviso" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Publicar Comunicado / Aviso</h3>
+        <button class="modal-close" data-close="modalAviso">&times;</button>
+      </div>
+      <form id="formAviso">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="avisoTitulo">Título del Aviso</label>
+            <input type="text" id="avisoTitulo" class="form-control" placeholder="Ej: Reunión de Diáconos este Sábado" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="avisoTipo">Nivel de Importancia</label>
+              <select id="avisoTipo" class="form-control">
+                <option value="general">Informativo General</option>
+                <option value="importante">Importante</option>
+                <option value="urgente">Urgente</option>
+              </select>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; padding-top: 1.5rem;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" id="avisoFijado">
+                <span>Fijar al inicio del tablón</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="avisoContenido">Mensaje o Contenido</label>
+            <textarea id="avisoContenido" class="form-control" rows="4" placeholder="Escribe el mensaje para el equipo de diáconos..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalAviso">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Publicar Aviso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Notificar Ausencia / Indisponibilidad -->
+  <div id="modalDisponibilidad" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Notificar Ausencia / Indisponibilidad</h3>
+        <button class="modal-close" data-close="modalDisponibilidad">&times;</button>
+      </div>
+      <form id="formDisponibilidad">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="dispFecha">Fecha en la que NO podrás servir</label>
+            <input type="date" id="dispFecha" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="dispMotivo">Motivo o Justificación</label>
+            <textarea id="dispMotivo" class="form-control" rows="2" placeholder="Ej: Viaje familiar, turno laboral..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalDisponibilidad">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar Ausencia</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenedor para Avisos Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

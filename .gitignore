@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Bases de datos SQLite y archivos temporales
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/test_*.db
+data/test_*.db-wal
+data/test_*.db-shm
+
+# Variables de entorno sensibles
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
